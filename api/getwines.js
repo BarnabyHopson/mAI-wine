@@ -11,7 +11,7 @@ export default async function handler(req, res) {
     }
 
     const response = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/recipes?user_name=eq.${encodeURIComponent(user_name)}&select=*&order=created_at.desc`,
+      `${process.env.SUPABASE_URL}/rest/v1/wines?user_name=eq.${encodeURIComponent(user_name)}&select=*&order=created_at.desc`,
       {
         method: 'GET',
         headers: {
@@ -24,13 +24,13 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      return res.status(response.status).json({ 
-        error: errorData.message || 'Failed to fetch recipes' 
+      return res.status(response.status).json({
+        error: errorData.message || 'Failed to fetch wines'
       });
     }
 
-    const recipes = await response.json();
-    return res.status(200).json(recipes);
+    const wines = await response.json();
+    return res.status(200).json(wines);
 
   } catch (error) {
     console.error('Error:', error);

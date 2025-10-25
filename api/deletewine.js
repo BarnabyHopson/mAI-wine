@@ -4,14 +4,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { recipe_id, user_name } = req.body;
+    const { wine_id, user_name } = req.body;
 
-    if (!recipe_id || !user_name) {
+    if (!wine_id || !user_name) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const response = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/recipes?id=eq.${recipe_id}&user_name=eq.${encodeURIComponent(user_name)}`,
+      `${process.env.SUPABASE_URL}/rest/v1/wines?id=eq.${wine_id}&user_name=eq.${encodeURIComponent(user_name)}`,
       {
         method: 'DELETE',
         headers: {
@@ -24,8 +24,8 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      return res.status(response.status).json({ 
-        error: errorData.message || 'Failed to delete recipe' 
+      return res.status(response.status).json({
+        error: errorData.message || 'Failed to delete wine'
       });
     }
 

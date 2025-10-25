@@ -4,14 +4,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { title, ingredients, instructions, notes, user_name } = req.body;
+    const { name, grape, year, region, country, style, price, where_bought, rating, user_name } = req.body;
 
-    if (!title || !ingredients || !instructions || !user_name) {
-      return res.status(400).json({ error: 'Missing required fields' });
+    if (!user_name) {
+      return res.status(400).json({ error: 'User name is required' });
     }
 
     const response = await fetch(
-      `${process.env.SUPABASE_URL}/rest/v1/recipes`,
+      `${process.env.SUPABASE_URL}/rest/v1/wines`,
       {
         method: 'POST',
         headers: {
@@ -21,10 +21,15 @@ export default async function handler(req, res) {
           'Prefer': 'return=representation'
         },
         body: JSON.stringify({
-          title,
-          ingredients,
-          instructions,
-          notes: notes || '',
+          name: name || '',
+          grape: grape || '',
+          year: year || '',
+          region: region || '',
+          country: country || '',
+          style: style || '',
+          price: price || '',
+          where_bought: where_bought || '',
+          rating: rating !== null && rating !== undefined ? rating : null,
           user_name
         })
       }
@@ -32,8 +37,8 @@ export default async function handler(req, res) {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      return res.status(response.status).json({ 
-        error: errorData.message || 'Failed to save recipe' 
+      return res.status(response.status).json({
+        error: errorData.message || 'Failed to save wine'
       });
     }
 
