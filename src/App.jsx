@@ -7,6 +7,7 @@ export default function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [inputName, setInputName] = useState('');
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
+  const [showInstructionsModal, setShowInstructionsModal] = useState(false);
   
   // View management
   const [currentView, setCurrentView] = useState('add');
@@ -426,7 +427,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
   // Privacy Modal
   const PrivacyModal = () => {
     if (!showPrivacyModal) return null;
-    
+
     return (
       <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
         <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
@@ -439,6 +440,28 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           </p>
           <button
             onClick={() => setShowPrivacyModal(false)}
+            className="w-full bg-[#d49563] text-white py-2 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // Instructions Modal
+  const InstructionsModal = () => {
+    if (!showInstructionsModal) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Instructions</h2>
+          <p className="text-sm text-gray-700 mb-6">
+            For this app to work at its best, aim to log 50-100 wines. You only need wines you really like or dislike for it to learn your preferences, roughly 70% like and 30% dislike.
+          </p>
+          <button
+            onClick={() => setShowInstructionsModal(false)}
             className="w-full bg-[#d49563] text-white py-2 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
           >
             Close
@@ -484,7 +507,13 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               </button>
             </form>
 
-            <div className="mt-6 text-center">
+            <div className="mt-6 text-center flex gap-4 justify-center">
+              <button
+                onClick={() => setShowInstructionsModal(true)}
+                className="text-xs text-gray-500 hover:text-gray-700 underline"
+              >
+                Instructions
+              </button>
               <button
                 onClick={() => setShowPrivacyModal(true)}
                 className="text-xs text-gray-500 hover:text-gray-700 underline"
@@ -494,6 +523,8 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
             </div>
           </div>
         </div>
+        <InstructionsModal />
+        <PrivacyModal />
       </>
     );
   }
@@ -588,7 +619,13 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
             </div>
           )}
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 flex gap-4 justify-center">
+            <button
+              onClick={() => setShowInstructionsModal(true)}
+              className="text-xs text-gray-500 hover:text-gray-700 underline"
+            >
+              Instructions
+            </button>
             <button
               onClick={() => setShowPrivacyModal(true)}
               className="text-xs text-gray-500 hover:text-gray-700 underline"
@@ -598,6 +635,8 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           </div>
         </div>
       </div>
+      <InstructionsModal />
+      <PrivacyModal />
       </>
     );
   }
@@ -950,7 +989,13 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
             </div>
           )}
 
-          <div className="text-center mt-8">
+          <div className="text-center mt-8 flex gap-4 justify-center">
+            <button
+              onClick={() => setShowInstructionsModal(true)}
+              className="text-xs text-gray-500 hover:text-gray-700 underline"
+            >
+              Instructions
+            </button>
             <button
               onClick={() => setShowPrivacyModal(true)}
               className="text-xs text-gray-500 hover:text-gray-700 underline"
@@ -960,6 +1005,8 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           </div>
         </div>
       </div>
+      <InstructionsModal />
+      <PrivacyModal />
     </>
   );
 }
