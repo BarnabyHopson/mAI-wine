@@ -40,6 +40,7 @@ export default function App() {
   const [editableRegion, setEditableRegion] = useState('');
   const [editableCountry, setEditableCountry] = useState('');
   const [editableStyle, setEditableStyle] = useState('');
+  const [editableWineType, setEditableWineType] = useState('');
   const [editablePrice, setEditablePrice] = useState('');
   const [editableWhereBought, setEditableWhereBought] = useState('');
   const [editableRating, setEditableRating] = useState('');
@@ -264,6 +265,7 @@ Your task - extract the following wine information:
 4. REGION: Wine region (e.g., "Napa Valley", "Bordeaux")
 5. COUNTRY: Country of origin (e.g., "France", "USA", "Italy")
 6. STYLE: Wine style (e.g., "Red - Full Bodied", "White - Crisp", "Sparkling")
+7. WINE_TYPE: Type of wine - MUST be one of exactly these four options: "red", "white", "rosé", or "sparkling"
 
 Return a JSON object with this EXACT structure:
 {
@@ -272,7 +274,8 @@ Return a JSON object with this EXACT structure:
   "year": "Year or empty string",
   "region": "Region or empty string",
   "country": "Country or empty string",
-  "style": "Wine style or empty string"
+  "style": "Wine style or empty string",
+  "wine_type": "Must be exactly: red, white, rosé, or sparkling"
 }
 
 DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no explanatory text. ONLY the JSON object.`
@@ -328,6 +331,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
       setEditableRegion(parsedResults.region || '');
       setEditableCountry(parsedResults.country || '');
       setEditableStyle(parsedResults.style || '');
+      setEditableWineType(parsedResults.wine_type || '');
       setEditablePrice('');
       setEditableWhereBought('');
       setEditableRating('');
@@ -373,6 +377,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           region: editableRegion.trim(),
           country: editableCountry.trim(),
           style: editableStyle.trim(),
+          wine_type: editableWineType.trim(),
           price: editablePrice.trim(),
           where_bought: editableWhereBought.trim(),
           rating: editableRating ? parseFloat(editableRating) : null,
@@ -1033,7 +1038,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               className="mt-4 inline-flex items-center gap-2 bg-[#C0C0C0] text-[#2C2C2C] px-6 py-3 rounded-lg font-medium hover:bg-[#A8A8A8] transition-colors"
             >
               <Book className="h-5 w-5" />
-              View My Liked/Disliked Wines
+              View My Wine Collection
             </button>
           </div>
 
@@ -1200,6 +1205,20 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C0C0C0] focus:border-transparent"
                       placeholder="e.g., Red - Full Bodied"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Wine Type *</label>
+                    <select
+                      value={editableWineType}
+                      onChange={(e) => setEditableWineType(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#C0C0C0] focus:border-transparent"
+                    >
+                      <option value="">Select type...</option>
+                      <option value="red">Red</option>
+                      <option value="white">White</option>
+                      <option value="rosé">Rosé</option>
+                      <option value="sparkling">Sparkling</option>
+                    </select>
                   </div>
                 </div>
 
