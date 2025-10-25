@@ -4,10 +4,14 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { user_name } = req.query;
+    const { user_name, wine_type } = req.query;
 
     if (!user_name) {
       return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!wine_type) {
+      return res.status(400).json({ error: 'Wine type is required' });
     }
 
     // Fetch user's wines from Supabase
@@ -37,8 +41,31 @@ export default async function handler(req, res) {
       });
     }
 
+    // Filter wines by the requested type using wine_type column
+    const filteredWines = wines.filter(wine => 
+      wine.wine_type && wine.wine_type.toLowerCase() === wine_type.toLowerCase()
+    );
+
+    // Check if user has enough wines of this type
+    if (filteredWines.length < 3) {
+      const wineTypeDisplay = wine_type.charAt(0).toUpperCase() + wine_type.slice(1);
+      return res.status(200).json({
+        probably: [{ 
+          name: `Not enough ${wineTypeDisplay} wines logged`, 
+          grape: '', 
+          region: '', 
+          country: '', 
+          style: '', 
+          price: '', 
+          reason: `You haven't logged enough ${wineTypeDisplay} wines yet for me to make recommendations in this category. Log at least 3 ${wineTypeDisplay} wines to get personalized suggestions.` 
+        }],
+        might: [],
+        brave: []
+      });
+    }
+
     // Prepare wine data for Claude
-    const winesSummary = wines.map(w => ({
+    const winesSummary = filteredWines.map(w => ({
       name: w.name,
       grape: w.grape,
       region: w.region,
@@ -47,13 +74,16 @@ export default async function handler(req, res) {
       rating: w.rating
     }));
 
+    const wineTypeDisplay = wine_type.charAt(0).toUpperCase() + wine_type.slice(1);
+
     // Call Claude API for suggestions
     const prompt = `You are a wine expert helping recommend wines to a user based on their logged collection.
 
-Here are the wines they've logged:
+Here are the ${wineTypeDisplay} wines they've logged:
 ${JSON.stringify(winesSummary, null, 2)}
 
 CRITICAL RULES:
+- ONLY suggest ${wineTypeDisplay} wines - this is absolutely critical
 - Focus heavily on their ratings (most important factor)
 - Suggest wines available in the UK under £20 (for shop-bought, not restaurant wines)
 - DO NOT suggest wines they've already logged
@@ -61,9 +91,9 @@ CRITICAL RULES:
 - Always include a brief reason why you're suggesting each wine
 
 Categories:
-1. "probably" - Very close matches (same grape OR same style as their highly-rated wines)
-2. "might" - Think outside the box (if they like dry crisp French whites, suggest similar English or German wines)
-3. "brave" - Adventurous suggestions that still align with their taste profile
+1. "probably" - Very close matches (same grape OR same style as their highly-rated ${wineTypeDisplay} wines)
+2. "might" - Think outside the box (different regions or grapes but similar ${wineTypeDisplay} wine profiles)
+3. "brave" - Adventurous ${wineTypeDisplay} suggestions that still align with their taste profile
 
 Return ONLY valid JSON in this exact structure:
 {
