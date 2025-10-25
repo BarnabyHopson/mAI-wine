@@ -1033,7 +1033,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               className="mt-4 inline-flex items-center gap-2 bg-[#C0C0C0] text-[#2C2C2C] px-6 py-3 rounded-lg font-medium hover:bg-[#A8A8A8] transition-colors"
             >
               <Book className="h-5 w-5" />
-              View My Wine Collection
+              View My Liked/Disliked Wines
             </button>
           </div>
 
