@@ -466,7 +466,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
         <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Instructions</h2>
           <p className="text-sm text-gray-700 mb-6">
-            For this app to work at its best, aim to log 50-100 wines. You only need wines you really like or dislike for it to learn your preferences, roughly 70% like and 30% dislike.
+            For this app to work at its best, aim to log 50-100 wines. You only need wines you really like or dislike for it to learn your preferences, roughly 70% like vs 30% dislike.
           </p>
           <button
             onClick={() => setShowInstructionsModal(false)}
@@ -810,7 +810,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
             <div className="bg-white rounded-lg shadow-lg p-12 text-center">
               <Loader2 className="h-12 w-12 animate-spin text-[#d49563] mx-auto mb-4" />
               <p className="text-gray-600">Analyzing your wine preferences...</p>
-              <p className="text-sm text-gray-500 mt-2">This may take 30-60 seconds</p>
+              <p className="text-sm text-gray-500 mt-2">This may take a few seconds</p>
             </div>
           ) : suggestionsError ? (
             <div className="bg-white rounded-lg shadow-lg p-12 text-center">
@@ -974,7 +974,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                 mAI wine
               </h1>
             </div>
-            <p className="text-gray-600">Snap photos of your wine bottles and get them cataloged</p>
+            <p className="text-gray-600">Upload photos of wine labels for ai generated insights into your preferences</p>
 
             <button
               onClick={() => {
