@@ -23,6 +23,7 @@ export default function App() {
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
   const [sendingChat, setSendingChat] = useState(false);
+  const [wineTypeFilter, setWineTypeFilter] = useState(null); // No default selection
 
   // Wine states
   const [files, setFiles] = useState([]);
@@ -725,14 +726,15 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
   }
 
   // Fetch suggestions
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = async (wineType) => {
+    setWineTypeFilter(wineType);
     setLoadingSuggestions(true);
     setSuggestionsError(null);
     setSuggestions(null);
     setChatMessages([]);
 
     try {
-      const response = await fetch(`/api/getsuggestions?user_name=${encodeURIComponent(userName)}`);
+      const response = await fetch(`/api/getsuggestions?user_name=${encodeURIComponent(userName)}&wine_type=${encodeURIComponent(wineType)}`);
 
       if (!response.ok) {
         throw new Error('Failed to get suggestions');
@@ -800,9 +802,57 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           </div>
 
           <div className="mb-8">
-            <div className="flex items-center gap-3 mb-2">
+            <div className="flex items-center gap-3 mb-4">
               <Sparkles className="h-8 w-8 text-[#8B2F47]" />
-              <h1 className="text-3xl font-bold text-[#8B2F47]">Based on wines you logged so far:</h1>
+              <h1 className="text-3xl font-bold text-[#8B2F47]">Select a wine category to begin</h1>
+            </div>
+            
+            {/* Wine Type Filter */}
+            <div className="flex gap-3 flex-wrap">
+              <button
+                onClick={() => fetchSuggestions('red')}
+                disabled={loadingSuggestions}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  wineTypeFilter === 'red' 
+                    ? 'bg-[#8B2F47] text-white' 
+                    : 'bg-white text-[#2C2C2C] border-2 border-[#8B2F47] hover:bg-[#F5F1E8]'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Red
+              </button>
+              <button
+                onClick={() => fetchSuggestions('white')}
+                disabled={loadingSuggestions}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  wineTypeFilter === 'white' 
+                    ? 'bg-[#8B2F47] text-white' 
+                    : 'bg-white text-[#2C2C2C] border-2 border-[#8B2F47] hover:bg-[#F5F1E8]'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                White
+              </button>
+              <button
+                onClick={() => fetchSuggestions('rosé')}
+                disabled={loadingSuggestions}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  wineTypeFilter === 'rosé' 
+                    ? 'bg-[#8B2F47] text-white' 
+                    : 'bg-white text-[#2C2C2C] border-2 border-[#8B2F47] hover:bg-[#F5F1E8]'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Rosé
+              </button>
+              <button
+                onClick={() => fetchSuggestions('sparkling')}
+                disabled={loadingSuggestions}
+                className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                  wineTypeFilter === 'sparkling' 
+                    ? 'bg-[#8B2F47] text-white' 
+                    : 'bg-white text-[#2C2C2C] border-2 border-[#8B2F47] hover:bg-[#F5F1E8]'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                Sparkling
+              </button>
             </div>
           </div>
 
@@ -817,7 +867,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
               <p className="text-red-600 mb-4">{suggestionsError}</p>
               <button
-                onClick={fetchSuggestions}
+                onClick={() => fetchSuggestions(wineTypeFilter)}
                 className="bg-[#8B2F47] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
               >
                 Try Again
@@ -890,7 +940,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               {/* Refresh button */}
               <div className="text-center">
                 <button
-                  onClick={fetchSuggestions}
+                  onClick={() => fetchSuggestions(wineTypeFilter)}
                   className="bg-[#8B2F47] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
                 >
                   Get New Suggestions
@@ -951,7 +1001,6 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
             <button
               onClick={() => {
                 setCurrentView('suggestions');
-                fetchSuggestions();
               }}
               className="bg-[#8B2F47] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors flex items-center gap-2 text-sm"
             >
