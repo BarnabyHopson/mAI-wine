@@ -890,7 +890,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                         value={editablePrice}
                         onChange={(e) => setEditablePrice(e.target.value)}
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
-                        placeholder="e.g., $45.99"
+                        placeholder="e.g., £45.99"
                       />
                     </div>
                     <div>
