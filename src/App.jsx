@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, FileText, AlertCircle, Loader2, Camera, X, ChefHat, CheckCircle2, Book, ArrowLeft, Search } from 'lucide-react';
+import { Upload, FileText, AlertCircle, Loader2, Camera, X, ChefHat, CheckCircle2, Book, ArrowLeft, Search, Sparkles } from 'lucide-react';
 
 export default function App() {
   // Simple username state
@@ -15,6 +15,14 @@ export default function App() {
   const [selectedWine, setSelectedWine] = useState(null);
   const [loadingWines, setLoadingWines] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Suggestions states
+  const [suggestions, setSuggestions] = useState(null);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [suggestionsError, setSuggestionsError] = useState(null);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState('');
+  const [sendingChat, setSendingChat] = useState(false);
 
   // Wine states
   const [files, setFiles] = useState([]);
@@ -716,13 +724,240 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
     );
   }
 
+  // Fetch suggestions
+  const fetchSuggestions = async () => {
+    setLoadingSuggestions(true);
+    setSuggestionsError(null);
+    setSuggestions(null);
+    setChatMessages([]);
+
+    try {
+      const response = await fetch(`/api/getsuggestions?user_name=${encodeURIComponent(userName)}`);
+
+      if (!response.ok) {
+        throw new Error('Failed to get suggestions');
+      }
+
+      const data = await response.json();
+      setSuggestions(data);
+    } catch (err) {
+      console.error('Suggestions error:', err);
+      setSuggestionsError(err.message || 'Failed to load suggestions');
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  // Send chat message
+  const sendChatMessage = async () => {
+    if (!chatInput.trim()) return;
+
+    const userMessage = chatInput.trim();
+    setChatInput('');
+    setChatMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setSendingChat(true);
+
+    try {
+      const response = await fetch('/api/chatsuggestions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          user_name: userName,
+          message: userMessage,
+          chat_history: chatMessages
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      const data = await response.json();
+      setChatMessages(prev => [...prev, { role: 'assistant', content: data.response }]);
+    } catch (err) {
+      console.error('Chat error:', err);
+      setChatMessages(prev => [...prev, { role: 'assistant', content: 'Sorry, I encountered an error. Please try again.' }]);
+    } finally {
+      setSendingChat(false);
+    }
+  };
+
+  // SUGGESTIONS VIEW
+  if (currentView === 'suggestions') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4 md:p-8">
+        <div className="max-w-4xl mx-auto">
+          <div className="mb-6">
+            <button
+              onClick={() => setCurrentView('add')}
+              className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
+            >
+              <ArrowLeft className="h-5 w-5" />
+              Back to Add Wine
+            </button>
+          </div>
+
+          <div className="mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <Sparkles className="h-8 w-8 text-[#d49563]" />
+              <h1 className="text-3xl font-bold text-gray-800">Based on wines you logged so far:</h1>
+            </div>
+          </div>
+
+          {loadingSuggestions ? (
+            <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+              <Loader2 className="h-12 w-12 animate-spin text-[#d49563] mx-auto mb-4" />
+              <p className="text-gray-600">Analyzing your wine preferences...</p>
+              <p className="text-sm text-gray-500 mt-2">This may take 30-60 seconds</p>
+            </div>
+          ) : suggestionsError ? (
+            <div className="bg-white rounded-lg shadow-lg p-12 text-center">
+              <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+              <p className="text-red-600 mb-4">{suggestionsError}</p>
+              <button
+                onClick={fetchSuggestions}
+                className="bg-[#d49563] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : suggestions ? (
+            <div className="space-y-6">
+              {/* You will probably like */}
+              <div className="bg-white rounded-lg shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-green-700 mb-4">You will probably like:</h2>
+                <div className="space-y-4">
+                  {suggestions.probably.map((wine, idx) => (
+                    <div key={idx} className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                      <h3 className="font-semibold text-gray-800 mb-2">{wine.name}</h3>
+                      <p className="text-sm text-gray-700 mb-2">
+                        {wine.grape && <span>{wine.grape}</span>}
+                        {wine.region && <span> • {wine.region}</span>}
+                        {wine.country && <span> • {wine.country}</span>}
+                        {wine.style && <span> • {wine.style}</span>}
+                      </p>
+                      {wine.price && <p className="text-sm text-gray-600 mb-2">Price: {wine.price}</p>}
+                      <p className="text-sm text-gray-600 italic">{wine.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* You might like */}
+              <div className="bg-white rounded-lg shadow-lg p-8">
+                <h2 className="text-2xl font-bold text-blue-700 mb-4">You might like:</h2>
+                <div className="space-y-4">
+                  {suggestions.might.map((wine, idx) => (
+                    <div key={idx} className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                      <h3 className="font-semibold text-gray-800 mb-2">{wine.name}</h3>
+                      <p className="text-sm text-gray-700 mb-2">
+                        {wine.grape && <span>{wine.grape}</span>}
+                        {wine.region && <span> • {wine.region}</span>}
+                        {wine.country && <span> • {wine.country}</span>}
+                        {wine.style && <span> • {wine.style}</span>}
+                      </p>
+                      {wine.price && <p className="text-sm text-gray-600 mb-2">Price: {wine.price}</p>}
+                      <p className="text-sm text-gray-600 italic">{wine.reason}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* If you're feeling brave */}
+              {suggestions.brave && suggestions.brave.length > 0 && (
+                <div className="bg-white rounded-lg shadow-lg p-8">
+                  <h2 className="text-2xl font-bold text-purple-700 mb-4">If you're feeling really brave try:</h2>
+                  <div className="space-y-4">
+                    {suggestions.brave.map((wine, idx) => (
+                      <div key={idx} className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                        <h3 className="font-semibold text-gray-800 mb-2">{wine.name}</h3>
+                        <p className="text-sm text-gray-700 mb-2">
+                          {wine.grape && <span>{wine.grape}</span>}
+                          {wine.region && <span> • {wine.region}</span>}
+                          {wine.country && <span> • {wine.country}</span>}
+                          {wine.style && <span> • {wine.style}</span>}
+                        </p>
+                        {wine.price && <p className="text-sm text-gray-600 mb-2">Price: {wine.price}</p>}
+                        <p className="text-sm text-gray-600 italic">{wine.reason}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Refresh button */}
+              <div className="text-center">
+                <button
+                  onClick={fetchSuggestions}
+                  className="bg-[#d49563] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+                >
+                  Get New Suggestions
+                </button>
+              </div>
+
+              {/* Chat box */}
+              <div className="bg-white rounded-lg shadow-lg p-8">
+                <h3 className="text-xl font-bold text-gray-800 mb-4">Want more specific suggestions?</h3>
+                <p className="text-sm text-gray-600 mb-4">Ask me anything like "show me more Italian reds" or "I don't like oaky wines"</p>
+
+                {/* Chat history */}
+                {chatMessages.length > 0 && (
+                  <div className="mb-4 space-y-3 max-h-96 overflow-y-auto">
+                    {chatMessages.map((msg, idx) => (
+                      <div key={idx} className={`p-3 rounded-lg ${msg.role === 'user' ? 'bg-blue-100 ml-8' : 'bg-gray-100 mr-8'}`}>
+                        <p className="text-sm font-semibold mb-1">{msg.role === 'user' ? 'You' : 'mAI wine'}</p>
+                        <p className="text-sm text-gray-700 whitespace-pre-wrap">{msg.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Chat input */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={chatInput}
+                    onChange={(e) => setChatInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                    placeholder="Ask for more suggestions..."
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                    disabled={sendingChat}
+                  />
+                  <button
+                    onClick={sendChatMessage}
+                    disabled={sendingChat || !chatInput.trim()}
+                    className="bg-[#d49563] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#c08552] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                  >
+                    {sendingChat ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
   // ADD RECIPE VIEW
   return (
     <>
       <PrivacyModal />
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="flex justify-end mb-4">
+          <div className="flex justify-between items-start mb-4">
+            <button
+              onClick={() => {
+                setCurrentView('suggestions');
+                fetchSuggestions();
+              }}
+              className="bg-[#d49563] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#c08552] transition-colors flex items-center gap-2 text-sm"
+            >
+              <Sparkles className="h-4 w-4" />
+              mAi wine suggestions
+            </button>
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800 text-sm"
