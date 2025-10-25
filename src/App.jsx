@@ -1002,16 +1002,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
       <PrivacyModal />
       <div className="min-h-screen bg-[#6B1F3D] p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-start mb-4">
-            <button
-              onClick={() => {
-                setCurrentView('suggestions');
-              }}
-              className="bg-[#C0C0C0] text-[#2C2C2C] px-4 py-2 rounded-lg font-medium hover:bg-[#A8A8A8] transition-colors flex items-center gap-2 text-sm"
-            >
-              <Sparkles className="h-4 w-4" />
-              mAi wine suggestions
-            </button>
+          <div className="flex justify-end items-start mb-4">
             <button
               onClick={handleLogout}
               className="flex items-center gap-2 text-[#C0C0C0] hover:text-white text-sm"
@@ -1023,23 +1014,34 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
 
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-2">
-              <img src="/logo.png" alt="mAI wine" className="h-16 w-16 md:h-20 md:w-20" />
+              <img src="/logo.png" alt="mAI wine" className="h-32 w-32 md:h-40 md:w-40" />
               <h1 className="text-4xl md:text-5xl font-bold text-[#C0C0C0]">
                 mAI wine
               </h1>
             </div>
-            <p className="text-[#C0C0C0]">Upload photos of wine labels for ai generated insights into your preferences</p>
+            <p className="text-[#C0C0C0] mb-4">Upload photos of wine labels for ai generated insights into your preferences</p>
 
-            <button
-              onClick={() => {
-                setCurrentView('list');
-                fetchWines();
-              }}
-              className="mt-4 inline-flex items-center gap-2 bg-[#C0C0C0] text-[#2C2C2C] px-6 py-3 rounded-lg font-medium hover:bg-[#A8A8A8] transition-colors"
-            >
-              <Book className="h-5 w-5" />
-              View My Wine Collection
-            </button>
+            <div className="flex flex-wrap gap-3 justify-center">
+              <button
+                onClick={() => {
+                  setCurrentView('list');
+                  fetchWines();
+                }}
+                className="inline-flex items-center gap-2 bg-[#C0C0C0] text-[#2C2C2C] px-6 py-3 rounded-lg font-medium hover:bg-[#A8A8A8] transition-colors"
+              >
+                <Book className="h-5 w-5" />
+                View My Liked/Disliked Wines
+              </button>
+              <button
+                onClick={() => {
+                  setCurrentView('suggestions');
+                }}
+                className="inline-flex items-center gap-2 bg-[#C0C0C0] text-[#2C2C2C] px-6 py-3 rounded-lg font-medium hover:bg-[#A8A8A8] transition-colors"
+              >
+                <Sparkles className="h-5 w-5" />
+                mAi wine suggestions
+              </button>
+            </div>
           </div>
 
           {!results ? (
