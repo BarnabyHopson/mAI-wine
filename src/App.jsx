@@ -10,24 +10,33 @@ export default function App() {
   
   // View management
   const [currentView, setCurrentView] = useState('add');
-  const [allRecipes, setAllRecipes] = useState([]);
-  const [selectedRecipe, setSelectedRecipe] = useState(null);
-  const [loadingRecipes, setLoadingRecipes] = useState(false);
+  const [allWines, setAllWines] = useState([]);
+  const [selectedWine, setSelectedWine] = useState(null);
+  const [loadingWines, setLoadingWines] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Recipe states
+
+  // Wine states
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [editableTitle, setEditableTitle] = useState('');
-  const [editableNotes, setEditableNotes] = useState('');
+
+  // Editable wine fields
+  const [editableName, setEditableName] = useState('');
+  const [editableGrape, setEditableGrape] = useState('');
+  const [editableYear, setEditableYear] = useState('');
+  const [editableRegion, setEditableRegion] = useState('');
+  const [editableCountry, setEditableCountry] = useState('');
+  const [editableStyle, setEditableStyle] = useState('');
+  const [editablePrice, setEditablePrice] = useState('');
+  const [editableWhereBought, setEditableWhereBought] = useState('');
+  const [editableRating, setEditableRating] = useState('');
 
   // Check localStorage for saved username on mount
   useEffect(() => {
-    const savedName = localStorage.getItem('recipeBoxUserName');
+    const savedName = localStorage.getItem('wineBoxUserName');
     if (savedName) {
       setUserName(savedName);
       setIsLoggedIn(true);
@@ -38,41 +47,41 @@ export default function App() {
   const handleSetName = (e) => {
     e.preventDefault();
     if (inputName.trim()) {
-      localStorage.setItem('recipeBoxUserName', inputName.trim());
+      localStorage.setItem('wineBoxUserName', inputName.trim());
       setUserName(inputName.trim());
       setIsLoggedIn(true);
     }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('recipeBoxUserName');
+    localStorage.removeItem('wineBoxUserName');
     setUserName('');
     setIsLoggedIn(false);
     setCurrentView('add');
     startOver();
   };
 
-  // Fetch recipes
-  const fetchRecipes = async () => {
+  // Fetch wines
+  const fetchWines = async () => {
     if (!userName) return;
-    
-    setLoadingRecipes(true);
+
+    setLoadingWines(true);
     setError(null);
-    
+
     try {
-      const response = await fetch(`/api/getrecipes?user_name=${encodeURIComponent(userName)}`);
-      
+      const response = await fetch(`/api/getwines?user_name=${encodeURIComponent(userName)}`);
+
       if (!response.ok) {
-        throw new Error('Failed to fetch recipes');
+        throw new Error('Failed to fetch wines');
       }
-      
-      const recipes = await response.json();
-      setAllRecipes(recipes);
+
+      const wines = await response.json();
+      setAllWines(wines);
     } catch (err) {
       console.error('Fetch error:', err);
-      setError(err.message || 'Failed to load recipes');
+      setError(err.message || 'Failed to load wines');
     } finally {
-      setLoadingRecipes(false);
+      setLoadingWines(false);
     }
   };
 
@@ -162,9 +171,9 @@ export default function App() {
     setError(null);
   };
 
-  const analyzeRecipe = async () => {
+  const analyzeWine = async () => {
     if (files.length === 0) {
-      setError("Please upload at least one recipe photo");
+      setError("Please upload at least one wine bottle photo");
       return;
     }
 
@@ -229,37 +238,31 @@ export default function App() {
 
       content.push({
         type: "text",
-        text: `You are analyzing recipe photos to extract the recipe information with ABSOLUTE ACCURACY.
+        text: `You are analyzing wine bottle photos (front and back labels) to extract key information with ABSOLUTE ACCURACY.
 
 CRITICAL RULES:
 - ONLY extract text you can see clearly and read with certainty
-- NEVER make up, estimate, or interpolate any information
-- If text is unclear or illegible, skip it rather than guessing
-- Multiple images provided may be pages of the SAME recipe
-- DO NOT duplicate information if it appears on multiple pages
-- Keep measurements with their ingredients (e.g., "2 cups flour" not just "flour")
-- Preserve the order of ingredients as they appear in the recipe
-- Break down instructions into clear, numbered steps
-- Simplify overly complex sentences while keeping the meaning
+- NEVER make up, estimate, or guess any information
+- If text is unclear, not visible, or not present, leave that field as an empty string ""
+- Multiple images provided are typically front and back of the SAME bottle
+- DO NOT duplicate information if it appears on multiple images
 
-Your task:
-1. Extract the recipe TITLE
-2. Extract ALL INGREDIENTS with their measurements in order
-3. Extract INSTRUCTIONS as simplified, step-by-step paragraphs
+Your task - extract the following wine information:
+1. NAME: The wine's name/label (e.g., "Château Margaux")
+2. GRAPE: Grape variety/varieties (e.g., "Cabernet Sauvignon" or "Pinot Noir")
+3. YEAR: Vintage year (e.g., "2018")
+4. REGION: Wine region (e.g., "Napa Valley", "Bordeaux")
+5. COUNTRY: Country of origin (e.g., "France", "USA", "Italy")
+6. STYLE: Wine style (e.g., "Red - Full Bodied", "White - Crisp", "Sparkling")
 
 Return a JSON object with this EXACT structure:
 {
-  "title": "Recipe Name Here",
-  "ingredients": [
-    "2 cups plain flour",
-    "1 tsp salt",
-    "etc"
-  ],
-  "instructions": [
-    "First step here as a clear sentence or two.",
-    "Second step here.",
-    "Continue with each step."
-  ]
+  "name": "Wine Name Here or empty string",
+  "grape": "Grape variety or empty string",
+  "year": "Year or empty string",
+  "region": "Region or empty string",
+  "country": "Country or empty string",
+  "style": "Wine style or empty string"
 }
 
 DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no explanatory text. ONLY the JSON object.`
@@ -302,16 +305,22 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
       }
       
       const parsedResults = JSON.parse(jsonMatch[0]);
-      
-      if (!parsedResults.title || 
-          !parsedResults.ingredients || !Array.isArray(parsedResults.ingredients) ||
-          !parsedResults.instructions || !Array.isArray(parsedResults.instructions)) {
-        throw new Error("Response format is invalid. Please try again with clearer images.");
+
+      if (!parsedResults.name && !parsedResults.grape && !parsedResults.year &&
+          !parsedResults.region && !parsedResults.country && !parsedResults.style) {
+        throw new Error("Could not extract any wine information. Please try again with clearer images.");
       }
-      
+
       setResults(parsedResults);
-      setEditableTitle(parsedResults.title);
-      setEditableNotes('');
+      setEditableName(parsedResults.name || '');
+      setEditableGrape(parsedResults.grape || '');
+      setEditableYear(parsedResults.year || '');
+      setEditableRegion(parsedResults.region || '');
+      setEditableCountry(parsedResults.country || '');
+      setEditableStyle(parsedResults.style || '');
+      setEditablePrice('');
+      setEditableWhereBought('');
+      setEditableRating('');
 
     } catch (err) {
       clearTimeout(timeoutId);
@@ -329,76 +338,88 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
     setSaved(false);
   };
 
-  const saveRecipe = async () => {
-    if (!results || !userName) return;
+  const saveWine = async () => {
+    if (!userName) return;
+
+    // Validation - at least name should be present
+    if (!editableName.trim()) {
+      setError('Please enter a wine name');
+      return;
+    }
 
     setSaving(true);
     setError(null);
 
     try {
-      const response = await fetch('/api/saverecipe', {
+      const response = await fetch('/api/savewine', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          title: editableTitle,
-          ingredients: results.ingredients,
-          instructions: results.instructions,
-          notes: editableNotes,
+          name: editableName.trim(),
+          grape: editableGrape.trim(),
+          year: editableYear.trim(),
+          region: editableRegion.trim(),
+          country: editableCountry.trim(),
+          style: editableStyle.trim(),
+          price: editablePrice.trim(),
+          where_bought: editableWhereBought.trim(),
+          rating: editableRating ? parseFloat(editableRating) : null,
           user_name: userName
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to save recipe');
+        throw new Error(errorData.error || 'Failed to save wine');
       }
 
       setSaved(true);
-      
+
       setTimeout(() => {
         setSaved(false);
       }, 2000);
 
     } catch (err) {
       console.error('Save error:', err);
-      setError(err.message || 'Failed to save recipe. Please try again.');
+      setError(err.message || 'Failed to save wine. Please try again.');
     } finally {
       setSaving(false);
     }
   };
 
-  const deleteRecipe = async (recipeId) => {
-    if (!confirm('Are you sure you want to delete this recipe? This cannot be undone.')) {
+  const deleteWine = async (wineId) => {
+    if (!confirm('Are you sure you want to delete this wine? This cannot be undone.')) {
       return;
     }
 
     setError(null);
 
     try {
-      const response = await fetch('/api/deleterecipe', {
+      const response = await fetch('/api/deletewine', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          recipe_id: recipeId,
+          wine_id: wineId,
           user_name: userName
         })
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to delete recipe');
+        throw new Error(errorData.error || 'Failed to delete wine');
       }
 
+      // Only change view and fetch wines if deletion was successful
       setCurrentView('list');
-      fetchRecipes();
+      fetchWines();
 
     } catch (err) {
       console.error('Delete error:', err);
-      setError(err.message || 'Failed to delete recipe. Please try again.');
+      setError(err.message || 'Failed to delete wine. Please try again.');
     }
   };
 
@@ -411,7 +432,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
         <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Privacy Policy</h2>
           <p className="text-sm text-gray-700 mb-4">
-            This app requires storage of your recipes. Recipes are processed by Anthropic and is covered by their privacy policy but we never share your details with anyone else.
+            This app requires storage of your wine collection. Images are processed by Anthropic AI and covered by their privacy policy. We never share your details with anyone else.
           </p>
           <p className="text-sm text-gray-700 mb-6">
             Contact <a href="https://www.rockyroadai.org" target="_blank" rel="noopener noreferrer" className="text-[#d49563] hover:underline">RockyRoadAI</a> for questions.
@@ -435,8 +456,8 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
         <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
             <div className="text-center mb-6">
-              <img src="/apple-touch-icon.png" alt="Recipe Box" className="h-32 w-32 mx-auto mb-4" />
-              <h1 className="text-3xl font-bold text-gray-800 mb-2">Recipe Box</h1>
+              <img src="/apple-touch-icon.png" alt="mAI wine" className="h-32 w-32 mx-auto mb-4" />
+              <h1 className="text-3xl font-bold text-gray-800 mb-2">mAI wine</h1>
               <p className="text-gray-600">Enter your name to get started</p>
             </div>
 
@@ -479,13 +500,15 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
 
   // LIST VIEW
   if (currentView === 'list') {
-    const filteredRecipes = allRecipes.filter(recipe => {
+    const filteredWines = allWines.filter(wine => {
       const query = searchQuery.toLowerCase();
-      const titleMatch = recipe.title.toLowerCase().includes(query);
-      const ingredientMatch = recipe.ingredients.some(ing => 
-        ing.toLowerCase().includes(query)
+      return (
+        wine.name.toLowerCase().includes(query) ||
+        wine.grape.toLowerCase().includes(query) ||
+        wine.region.toLowerCase().includes(query) ||
+        wine.country.toLowerCase().includes(query) ||
+        wine.style.toLowerCase().includes(query)
       );
-      return titleMatch || ingredientMatch;
     });
 
     return (
@@ -502,59 +525,62 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               Back
             </button>
             <div className="flex items-center gap-4 mb-4">
-              <img src="/apple-touch-icon.png" alt="Recipe Box" className="h-12 w-12" />
-              <h1 className="text-3xl font-bold text-gray-800">My Recipe Box</h1>
+              <img src="/apple-touch-icon.png" alt="mAI wine" className="h-12 w-12" />
+              <h1 className="text-3xl font-bold text-gray-800">My Wine Collection</h1>
             </div>
-            
+
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by recipe name or ingredient..."
+                placeholder="Search by name, grape, region, country, or style..."
                 className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
               />
             </div>
           </div>
 
-          {loadingRecipes ? (
+          {loadingWines ? (
             <div className="bg-white rounded-lg shadow-lg p-12 text-center">
               <Loader2 className="h-12 w-12 animate-spin text-[#d49563] mx-auto mb-4" />
-              <p className="text-gray-600">Loading recipes...</p>
+              <p className="text-gray-600">Loading wines...</p>
             </div>
-          ) : filteredRecipes.length === 0 ? (
+          ) : filteredWines.length === 0 ? (
             <div className="bg-white rounded-lg shadow-lg p-12 text-center">
               <p className="text-gray-600 mb-4">
-                {searchQuery ? 'No recipes match your search.' : 'No recipes yet. Add your first one!'}
+                {searchQuery ? 'No wines match your search.' : 'No wines yet. Add your first one!'}
               </p>
               {!searchQuery && (
                 <button
                   onClick={() => setCurrentView('add')}
                   className="bg-[#d49563] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
                 >
-                  Add Recipe
+                  Add Wine
                 </button>
               )}
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-lg overflow-hidden">
               <div className="divide-y divide-gray-200">
-                {filteredRecipes.map((recipe) => (
+                {filteredWines.map((wine) => (
                   <button
-                    key={recipe.id}
+                    key={wine.id}
                     onClick={() => {
-                      setSelectedRecipe(recipe);
+                      setSelectedWine(wine);
                       setCurrentView('detail');
                     }}
                     className="w-full p-6 text-left hover:bg-orange-50 transition-colors"
                   >
-                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{recipe.title}</h3>
+                    <h3 className="text-xl font-semibold text-gray-800 mb-2">{wine.name}</h3>
                     <p className="text-sm text-gray-600">
-                      {recipe.ingredients.length} ingredients • {recipe.instructions.length} steps
+                      {wine.grape && <span>{wine.grape}</span>}
+                      {wine.year && <span> • {wine.year}</span>}
+                      {wine.region && <span> • {wine.region}</span>}
+                      {wine.country && <span> • {wine.country}</span>}
                     </p>
-                    {recipe.notes && (
-                      <p className="text-sm text-gray-500 mt-2 italic line-clamp-1">{recipe.notes}</p>
+                    {wine.rating !== null && wine.rating !== undefined && (
+                      <p className="text-sm text-amber-600 mt-1">Rating: {wine.rating}/10</p>
                     )}
                   </button>
                 ))}
@@ -577,7 +603,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
   }
 
   // DETAIL VIEW
-  if (currentView === 'detail' && selectedRecipe) {
+  if (currentView === 'detail' && selectedWine) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
@@ -587,57 +613,64 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800"
             >
               <ArrowLeft className="h-5 w-5" />
-              Back to Recipe Box
+              Back to Wine Collection
             </button>
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-6 pb-6 border-b border-gray-200">
-              {selectedRecipe.title}
+              {selectedWine.name}
             </h1>
 
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <ChefHat className="h-6 w-6 text-[#d49563]" />
-                Ingredients
-              </h2>
-              <ul className="space-y-2">
-                {selectedRecipe.ingredients.map((ingredient, idx) => (
-                  <li key={idx} className="text-gray-700 flex items-start gap-2">
-                    <span className="text-[#d49563] mt-1">•</span>
-                    <span>{ingredient}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Instructions</h2>
-              <div className="space-y-4">
-                {selectedRecipe.instructions.map((step, idx) => (
-                  <div key={idx} className="flex gap-3">
-                    <span className="flex-shrink-0 w-8 h-8 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center font-semibold text-sm">
-                      {idx + 1}
-                    </span>
-                    <p className="text-gray-700 pt-1">{step}</p>
-                  </div>
-                ))}
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Grape</h3>
+                <p className="text-lg text-gray-800">{selectedWine.grape || 'Not specified'}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Year</h3>
+                <p className="text-lg text-gray-800">{selectedWine.year || 'Not specified'}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Region</h3>
+                <p className="text-lg text-gray-800">{selectedWine.region || 'Not specified'}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Country</h3>
+                <p className="text-lg text-gray-800">{selectedWine.country || 'Not specified'}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Style</h3>
+                <p className="text-lg text-gray-800">{selectedWine.style || 'Not specified'}</p>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Rating</h3>
+                <p className="text-lg text-amber-600 font-semibold">
+                  {selectedWine.rating !== null && selectedWine.rating !== undefined ? `${selectedWine.rating}/10` : 'Not rated'}
+                </p>
               </div>
             </div>
 
-            {selectedRecipe.notes && (
-              <div className="pt-6 border-t border-gray-200">
-                <h2 className="text-xl font-bold text-gray-800 mb-3">Notes</h2>
-                <p className="text-gray-700 whitespace-pre-wrap">{selectedRecipe.notes}</p>
+            <div className="pt-6 border-t border-gray-200 mb-6">
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Purchase Information</h2>
+              <div className="grid md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Price</h3>
+                  <p className="text-lg text-gray-800">{selectedWine.price || 'Not specified'}</p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-500 uppercase mb-1">Where Bought</h3>
+                  <p className="text-lg text-gray-800">{selectedWine.where_bought || 'Not specified'}</p>
+                </div>
               </div>
-            )}
+            </div>
           </div>
 
           <button
-            onClick={() => deleteRecipe(selectedRecipe.id)}
+            onClick={() => deleteWine(selectedWine.id)}
             className="w-full mt-6 bg-red-600 text-white py-3 rounded-lg font-medium hover:bg-red-700 transition-colors"
           >
-            Delete Recipe
+            Delete Wine
           </button>
         </div>
       </div>
@@ -662,22 +695,22 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
 
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-2">
-              <img src="/apple-touch-icon.png" alt="Recipe Box" className="h-16 w-16 md:h-20 md:w-20" />
+              <img src="/apple-touch-icon.png" alt="mAI wine" className="h-16 w-16 md:h-20 md:w-20" />
               <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
-                Recipe Box
+                mAI wine
               </h1>
             </div>
-            <p className="text-gray-600">Snap photos of your recipes and get them digitized</p>
-            
+            <p className="text-gray-600">Snap photos of your wine bottles and get them cataloged</p>
+
             <button
               onClick={() => {
                 setCurrentView('list');
-                fetchRecipes();
+                fetchWines();
               }}
               className="mt-4 inline-flex items-center gap-2 bg-[#d49563] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
             >
               <Book className="h-5 w-5" />
-              View My Recipe Box
+              View My Wine Collection
             </button>
           </div>
 
@@ -686,19 +719,19 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-lg">
                 <h3 className="font-semibold text-orange-900 mb-2 flex items-center gap-2">
                   <Camera className="h-5 w-5" />
-                  How to capture your recipe:
+                  How to capture your wine:
                 </h3>
                 <ol className="text-sm text-orange-800 space-y-1 list-decimal list-inside">
-                  <li>Take a photo of the first page of your recipe</li>
-                  <li>Click "Add More Photos" if your recipe spans multiple pages</li>
+                  <li>Take a photo of the front label of your wine bottle</li>
+                  <li>Take a photo of the back label</li>
                   <li>Make sure photos are clear and well-lit</li>
-                  <li>Click "Analyze Recipe" when all pages are uploaded</li>
+                  <li>Click "Analyze Wine" when both photos are uploaded</li>
                 </ol>
               </div>
 
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Recipe Photos
+                  Wine Bottle Photos
                 </label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-orange-500 transition-colors">
                   <input
@@ -765,76 +798,132 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               )}
 
               <button
-                onClick={analyzeRecipe}
+                onClick={analyzeWine}
                 disabled={loading || files.length === 0}
                 className="w-full bg-[#d49563] text-white py-3 rounded-lg font-medium hover:bg-[#c08552] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
-                    Analyzing {files.length} page{files.length !== 1 ? 's' : ''}... (30-60 seconds)
+                    Analyzing wine bottle... (30-60 seconds)
                   </>
                 ) : (
-                  `Analyze Recipe (${files.length} page${files.length !== 1 ? 's' : ''})`
+                  `Analyze Wine Bottle`
                 )}
               </button>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-lg p-8">
-                <div className="mb-6 pb-6 border-b border-gray-200">
-                  <input
-                    type="text"
-                    value={editableTitle}
-                    onChange={(e) => setEditableTitle(e.target.value)}
-                    className="text-3xl font-bold text-gray-900 w-full border-0 border-b-2 border-transparent hover:border-gray-200 focus:border-[#d49563] focus:outline-none transition-colors bg-transparent"
-                    placeholder="Recipe Title"
-                  />
-                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-6">Wine Information</h2>
+                <p className="text-sm text-gray-600 mb-6">All fields are editable. Add or correct any information below.</p>
 
-                <div className="mb-8">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                    <ChefHat className="h-6 w-6 text-[#d49563]" />
-                    Ingredients
-                  </h2>
-                  <ul className="space-y-2">
-                    {results.ingredients.map((ingredient, idx) => (
-                      <li key={idx} className="text-gray-700 flex items-start gap-2">
-                        <span className="text-[#d49563] mt-1">•</span>
-                        <span>{ingredient}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="mb-8">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">Instructions</h2>
-                  <div className="space-y-4">
-                    {results.instructions.map((step, idx) => (
-                      <div key={idx} className="flex gap-3">
-                        <span className="flex-shrink-0 w-8 h-8 bg-orange-100 text-orange-700 rounded-full flex items-center justify-center font-semibold text-sm">
-                          {idx + 1}
-                        </span>
-                        <p className="text-gray-700 pt-1">{step}</p>
-                      </div>
-                    ))}
+                <div className="grid md:grid-cols-2 gap-6 mb-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Name *</label>
+                    <input
+                      type="text"
+                      value={editableName}
+                      onChange={(e) => setEditableName(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      placeholder="Wine name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Grape</label>
+                    <input
+                      type="text"
+                      value={editableGrape}
+                      onChange={(e) => setEditableGrape(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      placeholder="Grape variety"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Year</label>
+                    <input
+                      type="text"
+                      value={editableYear}
+                      onChange={(e) => setEditableYear(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      placeholder="Vintage year"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Region</label>
+                    <input
+                      type="text"
+                      value={editableRegion}
+                      onChange={(e) => setEditableRegion(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      placeholder="Wine region"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Country</label>
+                    <input
+                      type="text"
+                      value={editableCountry}
+                      onChange={(e) => setEditableCountry(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      placeholder="Country"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">Style</label>
+                    <input
+                      type="text"
+                      value={editableStyle}
+                      onChange={(e) => setEditableStyle(e.target.value)}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      placeholder="e.g., Red - Full Bodied"
+                    />
                   </div>
                 </div>
 
                 <div className="pt-6 border-t border-gray-200">
-                  <h2 className="text-xl font-bold text-gray-800 mb-3">Notes</h2>
-                  <textarea
-                    value={editableNotes}
-                    onChange={(e) => setEditableNotes(e.target.value)}
-                    className="w-full bg-gray-50 rounded-lg p-4 min-h-24 border-2 border-transparent hover:border-gray-300 focus:border-[#d49563] focus:outline-none transition-colors resize-y"
-                    placeholder="Add your notes here (optional)..."
-                  />
+                  <h3 className="text-xl font-bold text-gray-800 mb-4">Your Information</h3>
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Price</label>
+                      <input
+                        type="text"
+                        value={editablePrice}
+                        onChange={(e) => setEditablePrice(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                        placeholder="e.g., $45.99"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Where Bought</label>
+                      <input
+                        type="text"
+                        value={editableWhereBought}
+                        onChange={(e) => setEditableWhereBought(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                        placeholder="Store or location"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">Rating (0-10)</label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="10"
+                        step="0.5"
+                        value={editableRating}
+                        onChange={(e) => setEditableRating(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                        placeholder="Rate 0-10"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
 
               <div className="flex gap-4">
                 <button
-                  onClick={saveRecipe}
+                  onClick={saveWine}
                   disabled={saving || saved}
                   className="flex-1 bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 disabled:bg-green-400 transition-colors flex items-center justify-center gap-2"
                 >
@@ -849,14 +938,14 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       Saved!
                     </>
                   ) : (
-                    'Add Recipe to your Recipe Box'
+                    'Add to Wine Collection'
                   )}
                 </button>
                 <button
                   onClick={startOver}
                   className="flex-1 bg-gray-600 text-white py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors"
                 >
-                  Analyze New Recipe
+                  Analyze New Wine
                 </button>
               </div>
             </div>
