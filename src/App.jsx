@@ -722,8 +722,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                   How to capture your wine:
                 </h3>
                 <ol className="text-sm text-orange-800 space-y-1 list-decimal list-inside">
-                  <li>Take a photo of the front label of your wine bottle</li>
-                  <li>Take a photo of the back label</li>
+                  <li>Take a photo of front and back labels of your wine bottle</li>
                   <li>Make sure photos are clear and well-lit</li>
                   <li>Click "Analyze Wine" when both photos are uploaded</li>
                 </ol>
