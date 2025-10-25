@@ -444,11 +444,11 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
             This app requires storage of your wine collection. Images are processed by Anthropic AI and covered by their privacy policy. We never share your details with anyone else.
           </p>
           <p className="text-sm text-gray-700 mb-6">
-            Contact <a href="https://www.rockyroadai.org" target="_blank" rel="noopener noreferrer" className="text-[#d49563] hover:underline">RockyRoadAI</a> for questions.
+            Contact <a href="https://www.rockyroadai.org" target="_blank" rel="noopener noreferrer" className="text-[#8B2F47] hover:underline">RockyRoadAI</a> for questions.
           </p>
           <button
             onClick={() => setShowPrivacyModal(false)}
-            className="w-full bg-[#d49563] text-white py-2 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+            className="w-full bg-[#8B2F47] text-white py-2 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
           >
             Close
           </button>
@@ -470,7 +470,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           </p>
           <button
             onClick={() => setShowInstructionsModal(false)}
-            className="w-full bg-[#d49563] text-white py-2 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+            className="w-full bg-[#8B2F47] text-white py-2 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
           >
             Close
           </button>
@@ -484,7 +484,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
     return (
       <>
         <PrivacyModal />
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-[#F5F1E8] flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full">
             <div className="text-center mb-6">
               <img src="/apple-touch-icon.png" alt="mAI wine" className="h-32 w-32 mx-auto mb-4" />
@@ -502,14 +502,14 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                   value={inputName}
                   onChange={(e) => setInputName(e.target.value)}
                   required
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                   placeholder="John Smith"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-[#d49563] text-white py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+                className="w-full bg-[#8B2F47] text-white py-3 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
               >
                 Get Started
               </button>
@@ -553,7 +553,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
     return (
       <>
         <PrivacyModal />
-        <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4 md:p-8">
+        <div className="min-h-screen bg-[#F5F1E8] p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <button
@@ -564,8 +564,8 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               Back
             </button>
             <div className="flex items-center gap-4 mb-4">
-              <img src="/apple-touch-icon.png" alt="mAI wine" className="h-12 w-12" />
-              <h1 className="text-3xl font-bold text-gray-800">My Wine Collection</h1>
+              <img src="/logo.png" alt="mAI wine" className="h-12 w-12" />
+              <h1 className="text-3xl font-bold text-[#8B2F47]">My Wine Collection</h1>
             </div>
 
             <div className="relative">
@@ -575,14 +575,14 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search by name, grape, region, country, or style..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
               />
             </div>
           </div>
 
           {loadingWines ? (
             <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-[#d49563] mx-auto mb-4" />
+              <Loader2 className="h-12 w-12 animate-spin text-[#8B2F47] mx-auto mb-4" />
               <p className="text-gray-600">Loading wines...</p>
             </div>
           ) : filteredWines.length === 0 ? (
@@ -593,7 +593,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               {!searchQuery && (
                 <button
                   onClick={() => setCurrentView('add')}
-                  className="bg-[#d49563] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+                  className="bg-[#8B2F47] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
                 >
                   Add Wine
                 </button>
@@ -652,7 +652,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
   // DETAIL VIEW
   if (currentView === 'detail' && selectedWine) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4 md:p-8">
+      <div className="min-h-screen bg-[#F5F1E8] p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <button
@@ -665,7 +665,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           </div>
 
           <div className="bg-white rounded-lg shadow-lg p-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-6 pb-6 border-b border-gray-200">
+            <h1 className="text-3xl font-bold text-[#8B2F47] mb-6 pb-6 border-b border-gray-200">
               {selectedWine.name}
             </h1>
 
@@ -787,7 +787,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
   // SUGGESTIONS VIEW
   if (currentView === 'suggestions') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4 md:p-8">
+      <div className="min-h-screen bg-[#F5F1E8] p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="mb-6">
             <button
@@ -801,14 +801,14 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
 
           <div className="mb-8">
             <div className="flex items-center gap-3 mb-2">
-              <Sparkles className="h-8 w-8 text-[#d49563]" />
-              <h1 className="text-3xl font-bold text-gray-800">Based on wines you logged so far:</h1>
+              <Sparkles className="h-8 w-8 text-[#8B2F47]" />
+              <h1 className="text-3xl font-bold text-[#8B2F47]">Based on wines you logged so far:</h1>
             </div>
           </div>
 
           {loadingSuggestions ? (
             <div className="bg-white rounded-lg shadow-lg p-12 text-center">
-              <Loader2 className="h-12 w-12 animate-spin text-[#d49563] mx-auto mb-4" />
+              <Loader2 className="h-12 w-12 animate-spin text-[#8B2F47] mx-auto mb-4" />
               <p className="text-gray-600">Analyzing your wine preferences...</p>
               <p className="text-sm text-gray-500 mt-2">This may take a few seconds</p>
             </div>
@@ -818,7 +818,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               <p className="text-red-600 mb-4">{suggestionsError}</p>
               <button
                 onClick={fetchSuggestions}
-                className="bg-[#d49563] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+                className="bg-[#8B2F47] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
               >
                 Try Again
               </button>
@@ -891,7 +891,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               <div className="text-center">
                 <button
                   onClick={fetchSuggestions}
-                  className="bg-[#d49563] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+                  className="bg-[#8B2F47] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
                 >
                   Get New Suggestions
                 </button>
@@ -922,13 +922,13 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                     onChange={(e) => setChatInput(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
                     placeholder="Ask for more suggestions..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                     disabled={sendingChat}
                   />
                   <button
                     onClick={sendChatMessage}
                     disabled={sendingChat || !chatInput.trim()}
-                    className="bg-[#d49563] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#c08552] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                    className="bg-[#8B2F47] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#9B3F57] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                   >
                     {sendingChat ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Send'}
                   </button>
@@ -945,7 +945,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
   return (
     <>
       <PrivacyModal />
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 p-4 md:p-8">
+      <div className="min-h-screen bg-[#F5F1E8] p-4 md:p-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-start mb-4">
             <button
@@ -953,7 +953,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                 setCurrentView('suggestions');
                 fetchSuggestions();
               }}
-              className="bg-[#d49563] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#c08552] transition-colors flex items-center gap-2 text-sm"
+              className="bg-[#8B2F47] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors flex items-center gap-2 text-sm"
             >
               <Sparkles className="h-4 w-4" />
               mAi wine suggestions
@@ -969,19 +969,19 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
 
           <div className="text-center mb-8">
             <div className="flex items-center justify-center gap-3 mb-2">
-              <img src="/apple-touch-icon.png" alt="mAI wine" className="h-16 w-16 md:h-20 md:w-20" />
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-800">
+              <img src="/logo.png" alt="mAI wine" className="h-16 w-16 md:h-20 md:w-20" />
+              <h1 className="text-4xl md:text-5xl font-bold text-[#8B2F47]">
                 mAI wine
               </h1>
             </div>
-            <p className="text-gray-600">Upload photos of wine labels for ai generated insights into your preferences</p>
+            <p className="text-[#2C2C2C]">Upload photos of wine labels for ai generated insights into your preferences</p>
 
             <button
               onClick={() => {
                 setCurrentView('list');
                 fetchWines();
               }}
-              className="mt-4 inline-flex items-center gap-2 bg-[#d49563] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#c08552] transition-colors"
+              className="mt-4 inline-flex items-center gap-2 bg-[#8B2F47] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#9B3F57] transition-colors"
             >
               <Book className="h-5 w-5" />
               View My Wine Collection
@@ -1073,7 +1073,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
               <button
                 onClick={analyzeWine}
                 disabled={loading || files.length === 0}
-                className="w-full bg-[#d49563] text-white py-3 rounded-lg font-medium hover:bg-[#c08552] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
+                className="w-full bg-[#8B2F47] text-white py-3 rounded-lg font-medium hover:bg-[#9B3F57] disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>
@@ -1088,8 +1088,8 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
           ) : (
             <div className="space-y-6">
               <div className="bg-white rounded-lg shadow-lg p-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Wine Information</h2>
-                <p className="text-sm text-gray-600 mb-6">All fields are editable. Add or correct any information below.</p>
+                <h2 className="text-2xl font-bold text-[#8B2F47] mb-6">Wine Information</h2>
+                <p className="text-sm text-[#2C2C2C] mb-6">All fields are editable. Add or correct any information below.</p>
 
                 <div className="grid md:grid-cols-2 gap-6 mb-6">
                   <div>
@@ -1098,7 +1098,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       type="text"
                       value={editableName}
                       onChange={(e) => setEditableName(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                       placeholder="Wine name"
                     />
                   </div>
@@ -1108,7 +1108,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       type="text"
                       value={editableGrape}
                       onChange={(e) => setEditableGrape(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                       placeholder="Grape variety"
                     />
                   </div>
@@ -1118,7 +1118,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       type="text"
                       value={editableYear}
                       onChange={(e) => setEditableYear(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                       placeholder="Vintage year"
                     />
                   </div>
@@ -1128,7 +1128,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       type="text"
                       value={editableRegion}
                       onChange={(e) => setEditableRegion(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                       placeholder="Wine region"
                     />
                   </div>
@@ -1138,7 +1138,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       type="text"
                       value={editableCountry}
                       onChange={(e) => setEditableCountry(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                       placeholder="Country"
                     />
                   </div>
@@ -1148,14 +1148,14 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                       type="text"
                       value={editableStyle}
                       onChange={(e) => setEditableStyle(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                       placeholder="e.g., Red - Full Bodied"
                     />
                   </div>
                 </div>
 
                 <div className="pt-6 border-t border-gray-200">
-                  <h3 className="text-xl font-bold text-gray-800 mb-4">Your Information</h3>
+                  <h3 className="text-xl font-bold text-[#8B2F47] mb-4">Your Information</h3>
                   <div className="grid md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-semibold text-gray-700 mb-2">Price</label>
@@ -1163,7 +1163,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                         type="text"
                         value={editablePrice}
                         onChange={(e) => setEditablePrice(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                         placeholder="e.g., £45.99"
                       />
                     </div>
@@ -1173,7 +1173,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                         type="text"
                         value={editableWhereBought}
                         onChange={(e) => setEditableWhereBought(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                         placeholder="Store or location"
                       />
                     </div>
@@ -1186,7 +1186,7 @@ DO NOT OUTPUT ANYTHING OTHER THAN VALID JSON. No markdown, no backticks, no expl
                         step="0.5"
                         value={editableRating}
                         onChange={(e) => setEditableRating(e.target.value)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#d49563] focus:border-transparent"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#8B2F47] focus:border-transparent"
                         placeholder="Rate 0-10"
                       />
                     </div>
