@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { name, grape, year, region, country, style, price, where_bought, rating, user_name } = req.body;
+    const { name, grape, year, region, country, style, wine_type, price, where_bought, rating, user_name } = req.body;
 
     if (!user_name) {
       return res.status(400).json({ error: 'User name is required' });
@@ -27,6 +27,7 @@ export default async function handler(req, res) {
           region: region || '',
           country: country || '',
           style: style || '',
+          wine_type: wine_type || '',
           price: price || '',
           where_bought: where_bought || '',
           rating: rating !== null && rating !== undefined ? rating : null,
